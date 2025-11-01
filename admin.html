@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Gaarrkh / Shivshakti — Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg2: linear-gradient(180deg,#08224f,#06305a);
+    --card-bg: rgba(255,255,255,0.03);
+    --accent:#d4af37;
+    --muted:#bcd1e6;
+    --white:#fff;
+  }
+  html,body{height:100%;margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:var(--bg2);color:var(--white);}
+  .container{max-width:1200px;margin:18px auto;padding:18px}
+  .card{background:var(--card-bg);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.04)}
+  h1{margin:0 0 12px 0}
+  table{width:100%;border-collapse:collapse;margin-top:12px}
+  th,td{padding:8px;border-bottom:1px solid rgba(255,255,255,0.04);text-align:left;font-size:14px}
+  th{font-weight:700;color:var(--muted)}
+  .btn{padding:8px 12px;border-radius:8px;border:0;background:var(--accent);color:#062034;font-weight:700;cursor:pointer}
+  .btn.ghost{background:transparent;color:var(--white);border:1px solid rgba(255,255,255,0.06)}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .small{font-size:13px;color:var(--muted)}
+  .flex{display:flex;gap:10px;align-items:center}
+  .right{margin-left:auto}
+  input[type="text"], input[type="email"], select { padding:8px;border-radius:8px;border:0;width:220px;background:#fff;color:#000 }
+  textarea{width:100%;min-height:90px;border-radius:8px;padding:8px}
+  .modal{position:fixed;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:1000}
+  .modal .card{width:720px;max-width:95%}
+  .hidden{display:none}
+  @media(max-width:840px){ .flex{flex-direction:column;align-items:flex-start} .right{margin-left:0} }
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:12px">
+        <h1>Admin Panel — Gaarrkh / Shivshakti</h1>
+        <div class="right small">Demo admin — local + server sync</div>
+      </div>
+
+      <div class="controls">
+        <button class="btn" id="refreshBtn">Refresh</button>
+        <button class="btn ghost" id="exportCsv">Export Users CSV</button>
+        <button class="btn" id="syncServer">Force Server Sync</button>
+        <input type="text" id="searchInput" placeholder="Search by name / email" />
+        <select id="filterLevel"><option value="">All levels</option><option value="gaarrkh">Gaarrkh</option><option value="shivshakti">Shivshakti</option></select>
+        <div style="margin-left:auto" class="small">Uses same WEB_APP_URL as portal (best-effort)</div>
+      </div>
+
+      <div id="message" class="small" style="margin-top:8px;color:var(--muted)"></div>
+
+      <h3 style="margin-top:18px">Registered Users</h3>
+      <div id="usersWrap" style="overflow:auto;max-height:360px"></div>
+
+      <div style="margin-top:16px;display:flex;gap:12px;align-items:center">
+        <button class="btn" id="viewPosts">View Posts</button>
+        <button class="btn ghost" id="viewTasks">View Tasks</button>
+        <button class="btn ghost" id="viewNotifs">View Notifications</button>
+        <button class="btn ghost" id="viewCalendar">View Calendar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for editing user -->
+  <div id="editModal" class="modal hidden" onclick="if(event.target===this) closeModal()">
+    <div class="card">
+      <h3 id="modalTitle">Edit User</h3>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <div style="flex:1;min-width:220px">
+          <label class="small">Full name</label>
+          <input type="text" id="m_fullname">
+        </div>
+        <div style="flex:1;min-width:220px">
+          <label class="small">Email / Username</label>
+          <input type="email" id="m_email">
+        </div>
+        <div style="flex:1;min-width:160px">
+          <label class="small">Level</label>
+          <select id="m_level"><option value="gaarrkh">gaarrkh</option><option value="shivshakti">shivshakti</option></select>
+        </div>
+        <div style="flex:1;min-width:160px">
+          <label class="small">Main Category</label>
+          <input type="text" id="m_mainCategory">
+        </div>
+        <div style="flex:1;min-width:160px">
+          <label class="small">Sub Category</label>
+          <input type="text" id="m_subCategory">
+        </div>
+      </div>
+
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <button class="btn" id="saveUserBtn">Save</button>
+        <button class="btn ghost" onclick="closeModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+/*
+  Admin panel script
+  - Tries server endpoints via same WEB_APP_URL as ccc.html
+  - Fallback: reads from localStorage keys used in ccc.html:
+     users, posts, tasks, notifications, calendarEvents
+*/
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxwOKV8qDzXmAOnZxqqYpbBgLxNRzYAL7OvuiMaOUkD1y7FgUzUL0WPuZf3lSwKl0NX/exec";
+const usersWrap = document.getElementById('usersWrap');
+const msg = document.getElementById('message');
+let allUsers = []; // local cache
+let editingUserIndex = null;
+
+document.getElementById('refreshBtn').addEventListener('click', loadAll);
+document.getElementById('exportCsv').addEventListener('click', exportCSV);
+document.getElementById('syncServer').addEventListener('click', forceServerSync);
+document.getElementById('searchInput').addEventListener('input', renderUsers);
+document.getElementById('filterLevel').addEventListener('change', renderUsers);
+
+document.getElementById('viewPosts').addEventListener('click', ()=> showList('posts'));
+document.getElementById('viewTasks').addEventListener('click', ()=> showList('tasks'));
+document.getElementById('viewNotifs').addEventListener('click', ()=> showList('notifications'));
+document.getElementById('viewCalendar').addEventListener('click', ()=> showList('calendarEvents'));
+
+document.getElementById('saveUserBtn').addEventListener('click', saveUserFromModal);
+
+async function loadAll(){
+  msg.textContent = 'Loading users from server (if available) and localStorage...';
+  allUsers = [];
+
+  // 1) Try server listUsers action (best-effort)
+  try {
+    const resp = await fetch(WEB_APP_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'listUsers'})});
+    const j = await resp.json();
+    if(j && Array.isArray(j.users)) {
+      allUsers = j.users;
+      msg.textContent = 'Loaded users from server.';
+    }
+  } catch(e) {
+    console.log('Server listUsers failed', e);
+    msg.textContent = 'Server unreachable — using localStorage fallback.';
+  }
+
+  // 2) Merge local storage users (local has priority for offline edits)
+  try {
+    const local = JSON.parse(localStorage.getItem('users') || '[]');
+    if(local && local.length){
+      // merge by username: local overrides
+      const map = {};
+      (allUsers || []).forEach(u=>{ if(u.username) map[u.username.toLowerCase()] = u; });
+      local.forEach(u=>{ if(u.username) map[u.username.toLowerCase()] = u; else map['local_' + Math.random()] = u; });
+      allUsers = Object.values(map);
+      msg.textContent += ' Merged local users.';
+    }
+  } catch(e){ console.log('local users read failed', e); }
+
+  renderUsers();
+}
+
+function renderUsers(){
+  const q = (document.getElementById('searchInput').value || '').toLowerCase();
+  const lvl = (document.getElementById('filterLevel').value || '');
+  usersWrap.innerHTML = '';
+  if(!allUsers.length){ usersWrap.innerHTML = '<div class="small">No users found.</div>'; return; }
+  const table = document.createElement('table');
+  table.innerHTML = `<thead><tr>
+    <th>Reg ID</th><th>Name</th><th>Email</th><th>Level</th><th>Category</th><th>Submitted At</th><th>Actions</th>
+  </tr></thead>`;
+  const tbody = document.createElement('tbody');
+  const filtered = allUsers.filter(u=>{
+    if(lvl && (u.level||'') !== lvl) return false;
+    if(!q) return true;
+    return (u.fullname||'').toLowerCase().includes(q) || (u.email||'').toLowerCase().includes(q) || (u.username||'').toLowerCase().includes(q);
+  });
+  filtered.forEach((u, idx)=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${u.registrationId || ''}</td>
+      <td>${u.fullname || ''}</td>
+      <td>${u.email || u.username || ''}</td>
+      <td>${u.level || ''}</td>
+      <td>${(u.mainCategory||'') + ' / ' + (u.subCategory||'')}</td>
+      <td>${u.submittedAt ? new Date(u.submittedAt).toLocaleString() : ''}</td>
+      <td>
+        <button class="btn ghost" data-idx="${idx}" onclick="openEdit(${idx})">Edit</button>
+        <button class="btn" data-idx="${idx}" onclick="approveUser(${idx})">Approve</button>
+        <button class="btn ghost" data-idx="${idx}" onclick="deleteUser(${idx})">Delete</button>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+  usersWrap.appendChild(table);
+}
+
+// open modal to edit user
+function openEdit(idx){
+  const u = allUsers[idx];
+  if(!u) return alert('User not found');
+  editingUserIndex = idx;
+  document.getElementById('modalTitle').textContent = 'Edit user — ' + (u.username || u.email || u.fullname);
+  document.getElementById('m_fullname').value = u.fullname || '';
+  document.getElementById('m_email').value = u.email || u.username || '';
+  document.getElementById('m_level').value = u.level || 'gaarrkh';
+  document.getElementById('m_mainCategory').value = u.mainCategory || '';
+  document.getElementById('m_subCategory').value = u.subCategory || '';
+  document.getElementById('editModal').classList.remove('hidden');
+}
+function closeModal(){ editingUserIndex = null; document.getElementById('editModal').classList.add('hidden'); }
+
+async function saveUserFromModal(){
+  if(editingUserIndex===null) return;
+  const u = allUsers[editingUserIndex];
+  u.fullname = document.getElementById('m_fullname').value.trim();
+  u.email = document.getElementById('m_email').value.trim();
+  u.username = u.email;
+  u.level = document.getElementById('m_level').value;
+  u.mainCategory = document.getElementById('m_mainCategory').value.trim();
+  u.subCategory = document.getElementById('m_subCategory').value.trim();
+
+  // update localStorage
+  try {
+    const local = JSON.parse(localStorage.getItem('users')||'[]');
+    const idx = local.findIndex(x=> x.username && u.username && x.username.toLowerCase() === u.username.toLowerCase());
+    if(idx !== -1) local[idx] = u; else local.push(u);
+    localStorage.setItem('users', JSON.stringify(local));
+    msg.textContent = 'Saved to localStorage.';
+  } catch(e){ console.log(e); }
+
+  // try server update
+  try {
+    const resp = await fetch(WEB_APP_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'updateUser', body:u})});
+    const j = await resp.json();
+    if(j && j.status === 'ok') msg.textContent += ' Server updated.';
+  } catch(e){ console.log('server update failed', e); }
+
+  closeModal();
+  renderUsers();
+}
+
+async function approveUser(idx){
+  const u = allUsers[idx];
+  if(!u) return;
+  // set approved flag
+  u.approved = true;
+  // update local and server similar to save
+  try {
+    const local = JSON.parse(localStorage.getItem('users')||'[]');
+    const pos = local.findIndex(x=> x.username && u.username && x.username.toLowerCase() === u.username.toLowerCase());
+    if(pos !== -1) local[pos] = u; else local.push(u);
+    localStorage.setItem('users', JSON.stringify(local));
+    msg.textContent = 'User approved locally.';
+  } catch(e){}
+  try {
+    await fetch(WEB_APP_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'approveUser', body:u})});
+    msg.textContent += ' Server notified.';
+  } catch(e){}
+  renderUsers();
+}
+
+async function deleteUser(idx){
+  if(!confirm('Delete this user? This removes local copy and tries server delete.')) return;
+  const u = allUsers[idx];
+  // remove from localStorage
+  try {
+    const local = JSON.parse(localStorage.getItem('users')||'[]');
+    const newLocal = local.filter(x=> !(x.username && u.username && x.username.toLowerCase() === u.username.toLowerCase()));
+    localStorage.setItem('users', JSON.stringify(newLocal));
+    msg.textContent = 'Deleted locally.';
+  } catch(e){}
+  // try server delete
+  try {
+    await fetch(WEB_APP_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'deleteUser', body:{username: u.username}})});
+    msg.textContent += ' Server delete requested.';
+  } catch(e){}
+  // remove from cache
+  allUsers.splice(idx,1);
+  renderUsers();
+}
+
+// export CSV of users
+function exportCSV(){
+  if(!allUsers.length) return alert('No users to export');
+  const rows = [['registrationId','fullname','email','username','level','mainCategory','subCategory','mobile','submittedAt']];
+  allUsers.forEach(u=>{
+    rows.push([
+      u.registrationId||'',
+      u.fullname||'',
+      u.email||u.username||'',
+      u.username||'',
+      u.level||'',
+      u.mainCategory||'',
+      u.subCategory||'',
+      u.mobile||'',
+      u.submittedAt||''
+    ]);
+  });
+  const csv = rows.map(r=> r.map(cell => `"${String(cell||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'users_export.csv'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+}
+
+// Force server sync (attempt to push local users to server)
+async function forceServerSync(){
+  try {
+    const local = JSON.parse(localStorage.getItem('users')||'[]');
+    if(!local.length) return alert('No local users to sync');
+    msg.textContent = 'Pushing ' + local.length + ' users to server...';
+    const resp = await fetch(WEB_APP_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'bulkUpsertUsers', body:{users: local}})});
+    const j = await resp.json();
+    msg.textContent = (j && j.status==='ok') ? 'Server sync complete' : 'Server responded (check logs)';
+  } catch(e){ msg.textContent = 'Server sync failed (server unreachable)'; console.log(e); }
+}
+
+// generic viewer for posts/tasks/notifications/calendar
+function showList(key){
+  // try server read first
+  (async ()=>{
+    let arr = [];
+    try {
+      const resp = await fetch(WEB_APP_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'list', body:{what: key}})});
+      const j = await resp.json();
+      if(j && Array.isArray(j.data)) arr = j.data;
+    } catch(e){}
+    if(!arr.length){
+      // fallback to localStorage
+      try { arr = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e){ arr = []; }
+    }
+    openListModal(key, arr);
+  })();
+}
+
+function openListModal(title, arr){
+  // small modal using window.open for simplicity
+  const w = window.open('', '_blank', 'width=900,height=700,scrollbars=yes');
+  const html = `
+    <html><head><title>${title}</title><style>
+      body{font-family:Inter,system-ui,Arial,sans-serif;background:#071a3a;color:#fff;padding:12px}
+      table{width:100%;border-collapse:collapse}
+      th,td{padding:8px;border-bottom:1px solid rgba(255,255,255,0.06)}
+      th{color:#bcd1e6}
+    </style></head><body>
+    <h2>${title}</h2>
+    <pre style="white-space:pre-wrap">${JSON.stringify(arr, null, 2)}</pre>
+    </body></html>`;
+  w.document.write(html); w.document.close();
+}
+
+// initial load
+loadAll();
+</script>
+</body>
+</html>
