@@ -1,501 +1,102 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Gaarrkh / Shivshakti Portal — Registration • Login • Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg1: #071a3a; /* deep royal blue */
-    --bg2: linear-gradient(180deg,#08224f,#06305a);
-    --accent: #d4af37; /* gold */
-    --muted: #bcd1e6;
-    --card:#0f2b4a;
-    --white: #ffffff;
-    --input-bg: #ffffff;
-    --input-text: #000000;
-    --shadow: rgba(0,0,0,0.25);
-  }
-  *{box-sizing:border-box}
-  body{
-    margin:0;font-family:Inter,system-ui,Arial,sans-serif;
-    min-height:100vh;
-    background:var(--bg2);
-    color:var(--white);
-    -webkit-font-smoothing:antialiased;
-  }
-  .container{max-width:1200px;margin:18px auto;padding:18px}
-  .card{
-    background:rgba(255,255,255,0.03);
-    border-radius:12px;padding:18px;border:1px solid rgba(255,255,255,0.04);
-    box-shadow:0 8px 30px var(--shadow);
-  }
-  header{display:flex;align-items:center;gap:16px;justify-content:center}
-  header img{height:86px;width:86px;object-fit:contain;border-radius:12px;border:2px solid rgba(255,255,255,0.06)}
-  h1{margin:8px 0 0 0;font-size:22px;color:var(--white);text-align:center}
-  .muted{color:var(--muted);font-size:13px;text-align:center}
-  .nav{display:flex;gap:8px;margin:12px auto;justify-content:center}
-  .btn{padding:10px 16px;border-radius:10px;border:none;background:var(--accent);color:#062034;font-weight:800;cursor:pointer}
-  .btn.ghost{background:transparent;color:var(--white);border:1px solid rgba(255,255,255,0.08)}
-  .hidden{display:none}
-  .levels{display:flex;gap:12px;justify-content:center;margin-top:12px}
-  .level-btn{padding:12px 18px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);cursor:pointer;background:transparent;color:var(--white);font-weight:700}
-  .level-btn.selected{background:var(--white);color:#062034}
-  form .row{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px}
-  .col{flex:1 1 240px;min-width:200px}
-  label{display:block;margin-top:6px;font-weight:700;color:var(--muted);font-size:13px}
-  input,select,textarea{
-    width:100%;padding:10px;border-radius:8px;border:0;background:var(--input-bg);color:var(--input-text);
-    margin-top:6px;font-size:14px;
-  }
-  textarea{min-height:90px}
-  .flex{display:flex;gap:8px;align-items:center}
-  .wrap{display:flex;gap:16px}
-  .sidebar{width:260px;border-right:1px solid rgba(255,255,255,0.04);padding:16px;background:rgba(255,255,255,0.02)}
-  .main{flex:1;padding:16px}
-  .profile-box{padding:12px;border-radius:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03)}
-  .avatar{width:72px;height:72px;border-radius:8px;background:#e9e9ef;color:#062034;display:flex;align-items:center;justify-content:center;font-weight:800}
-  .navcol button{display:block;width:100%;text-align:left;padding:10px;border-radius:8px;border:0;background:transparent;color:var(--white);cursor:pointer;margin-bottom:8px}
-  .navcol button.active{background:rgba(255,255,255,0.03);border-left:4px solid var(--accent)}
-  .small{font-size:13px;color:var(--muted)}
-  .task-item{border:1px solid rgba(255,255,255,0.03);padding:8px;border-radius:8px;margin-bottom:8px;background:rgba(0,0,0,0.08)}
-  .badge{background:var(--accent);color:#062034;padding:6px 8px;border-radius:20px;font-weight:700}
-  .gold-input-select{background:#ffffff;color:#000;padding:10px;border-radius:8px}
-  .calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-  .cal-day{background:rgba(255,255,255,0.03);padding:8px;border-radius:6px;min-height:70px}
-  .cal-day .date{font-weight:800}
-  footer{margin-top:18px;text-align:center;color:rgba(255,255,255,0.44);font-size:12px}
-  @media(max-width:900px){ .wrap{flex-direction:column} .sidebar{width:100%} .levels{flex-direction:column} }
-</style>
-</head>
-<body>
-  <div class="container">
-    <!-- TOP CARD / WELCOME -->
-    <div class="card" id="welcomeCard">
-      <header>
-        <img src="logo.jpg" id="logoMain" alt="Logo" onerror="this.style.display='none'">
-      </header>
-      <h1 id="mainTitle">Welcome to Gaarrkh / Shivshakti Portal</h1>
-      <div class="muted">Register new user — or choose your organisation and continue</div>
+<!-- ... existing code ... -->
+<!-- REGISTRATION MULTI-STEP -->
+<div id="registerCard" class="card hidden" style="margin-top:12px">
+  <h3 style="margin:0;color:var(--white)">Register New User</h3>
+  <div class="muted">Follow steps: Personal → Bank → Category & Terms → Finish</div>
 
-      <div style="margin-top:18px;display:flex;justify-content:center;gap:12px">
-        <button class="btn" onclick="showScreen('selectOrg')">Get Started →</button>
-        <button class="btn ghost" onclick="showScreen('login')">Already registered? Login</button>
+  <div id="regSteps" style="margin-top:14px">
+    <!-- Step 2: Personal -->
+    <div id="regStep2">
+      <strong>Personal Details</strong>
+      <form id="regForm">
+        <input type="hidden" id="reg_level">
+        <div class="row">
+          <!-- ... existing fields ... -->
+        </div>
+        <!-- ... other rows ... -->
+        <div style="margin-top:12px;display:flex;justify-content:space-between">
+          <div><button type="button" class="btn ghost" id="backToSelect" onclick="showScreen('selectOrg')">Back</button></div>
+          <div><button type="button" class="btn" id="toBank">Continue to Bank →</button></div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Step 3: Bank & credentials -->
+    <div id="regStep3" class="hidden" style="margin-top:12px">
+      <strong>Bank & Credentials</strong>
+      <div class="row">
+        <!-- ... existing bank fields ... -->
+      </div>
+      <div class="row" style="margin-top:10px">
+        <!-- ... username/password ... -->
+      </div>
+      <div style="margin-top:12px;display:flex;justify-content:space-between">
+        <button class="btn ghost" id="backToPersonal">Back</button>
+        <button class="btn" id="toCategory">Continue to Category →</button>
       </div>
     </div>
 
-    <!-- SELECT ORGANISATION -->
-    <div id="selectOrg" class="card hidden" style="margin-top:12px">
-      <h2 style="text-align:center;margin:0;color:var(--white)">Select Organisation</h2>
-      <div class="muted" style="text-align:center;margin-top:6px">Choose Gaarrkh or Shivshakti to start registration</div>
-      <div class="levels">
-        <div class="level-btn" id="btn-gaarrkh" data-level="gaarrkh">Gaarrkh</div>
-        <div class="level-btn" id="btn-shivshakti" data-level="shivshakti">Shivshakti</div>
-      </div>
-      <div style="margin-top:14px;display:flex;justify-content:center;gap:10px">
-        <button class="btn" id="toStep2">Continue →</button>
-        <button class="btn ghost" onclick="showScreen('welcomeCard')">Back</button>
-      </div>
-    </div>
-
-    <!-- REGISTRATION MULTI-STEP -->
-    <div id="registerCard" class="card hidden" style="margin-top:12px">
-      <h3 style="margin:0;color:var(--white)">Register New User</h3>
-      <div class="muted">Follow steps: Personal → Bank → Category & Terms → Finish</div>
-
-      <div id="regSteps" style="margin-top:14px">
-        <!-- Step 2: Personal -->
-        <div id="regStep2">
-          <strong>Personal Details</strong>
-          <form id="regForm">
-            <input type="hidden" id="reg_level">
-            <div class="row">
-              <div class="col">
-                <label>Registration ID</label>
-                <div style="display:flex;gap:8px">
-                  <input id="regId" readonly>
-                  <button type="button" class="btn ghost" id="regen">Regenerate</button>
-                </div>
-                <div class="small">Auto created (prefix by organisation)</div>
-              </div>
-              <div class="col"><label>Full name *</label><input id="fullName" required></div>
-              <div class="col"><label>Email *</label><input id="email" type="email" required></div>
-            </div>
-
-            <div class="row">
-              <div class="col"><label>Contact number *</label><input id="mobile" pattern="[0-9]{10}" required></div>
-              <div class="col"><label>Alternate number</label><input id="altMobile"></div>
-              <div class="col"><label>State *</label><input id="state" required></div>
-            </div>
-
-            <div class="row">
-              <div class="col"><label>City *</label><input id="city" required></div>
-              <div class="col"><label>Pincode *</label><input id="pincode" pattern="[0-9]{6}" required></div>
-              <div class="col"><label>Service area — City</label><input id="serviceCity"></div>
-            </div>
-
-            <div class="row">
-              <div class="col"><label>Service area — Zip</label><input id="serviceZip"></div>
-              <div class="col"><label>Aadhaar *</label><input id="aadhaar" pattern="[0-9]{12}" required></div>
-              <div class="col"><label>PAN *</label><input id="pan" pattern="[A-Z]{5}[0-9]{4}[A-Z]" required></div>
-            </div>
-
-            <div style="margin-top:12px;display:flex;justify-content:space-between">
-              <div><button type="button" class="btn ghost" id="backToSelect" onclick="showScreen('selectOrg')">Back</button></div>
-              <div><button type="button" class="btn" id="toBank">Continue to Bank →</button></div>
-            </div>
-          </form>
+    <!-- Step 4: Category & Terms -->
+    <div id="regStep4" class="hidden" style="margin-top:12px">
+      <strong>Category & Terms</strong>
+      <div class="row">
+        <div class="col"><label>Selected Level</label><input id="showLevel" readonly></div>
+        <div class="col"><label>Main category *</label>
+          <select id="mainCategory" class="gold-input-select">
+            <option value="">Select</option>
+            <option value="central">Central</option>
+            <option value="state">State</option>
+            <option value="divisional">Divisional</option>
+            <option value="zone">Zone</option>
+            <option value="cluster">Cluster</option>
+            <option value="miniCluster">Mini Cluster</option>
+            <option value="groupLeader">Group Leader</option>
+            <option value="worker">Worker</option>
+            <option value="sabhasad">Sabhasad</option>
+          </select>
         </div>
-
-        <!-- Step 3: Bank & credentials -->
-        <div id="regStep3" class="hidden" style="margin-top:12px">
-          <strong>Bank & Credentials</strong>
-          <div class="row">
-            <div class="col"><label>Account holder name *</label><input id="accHolder" required></div>
-            <div class="col"><label>Account number *</label><input id="accNumber" required></div>
-            <div class="col"><label>Bank name *</label>
-              <select id="bankName" class="gold-input-select">
-                <option value="">Select bank</option>
-                <option>AU SMALL FINANCE BANK SANGLI</option>
-                <option>SBI</option>
-                <option>HDFC</option>
-                <option>Bank of Maharashtra</option>
-                <option>ICICI</option>
-              </select>
-            </div>
-            <div class="col"><label>IFSC *</label><input id="ifsc" required></div>
-          </div>
-
-          <div class="row" style="margin-top:10px">
-            <div class="col"><label>Username (auto = email)</label><input id="username" readonly></div>
-            <div class="col"><label>Password *</label><input id="password" type="password" required></div>
-            <div class="col"><label>Confirm password *</label><input id="password2" type="password" required></div>
-          </div>
-
-          <div style="margin-top:12px;display:flex;justify-content:space-between">
-            <button class="btn ghost" id="backToPersonal">Back</button>
-            <button class="btn" id="toCategory">Continue to Category →</button>
-          </div>
-        </div>
-
-        <!-- Step 4: Category & Terms -->
-        <div id="regStep4" class="hidden" style="margin-top:12px">
-          <strong>Category & Terms</strong>
-          <div class="row">
-            <div class="col"><label>Selected Level</label><input id="showLevel" readonly></div>
-            <div class="col"><label>Main category *</label>
-              <select id="mainCategory" class="gold-input-select">
-                <option value="">Select</option>
-                <option value="central">Central</option>
-                <option value="state">State</option>
-                <option value="divisional">Divisional</option>
-                <option value="zone">Zone</option>
-                <option value="cluster">Cluster</option>
-                <option value="miniCluster">Mini Cluster</option>
-                <option value="groupLeader">Group Leader</option>
-                <option value="worker">Worker</option>
-                <option value="sabhasad">Sabhasad</option>
-              </select>
-            </div>
-            <div class="col"><label>Subcategory *</label>
-              <select id="subCategory" class="gold-input-select"><option value="">Choose main first</option></select>
-            </div>
-          </div>
-
-          <div id="termsWrap" class="small hidden" style="margin-top:12px;background:rgba(255,255,255,0.02);padding:10px;border-radius:8px">
-            <div style="display:flex;justify-content:space-between;align-items:center">
-              <div><strong>Terms & Reference</strong></div>
-              <div><a id="termsLink" href="#" target="_blank" style="color:var(--accent)">Open link</a></div>
-            </div>
-            <div style="margin-top:8px"><label style="color:var(--muted)"><input id="agreeTC" type="checkbox"> I have read & agree</label></div>
-          </div>
-
-          <div style="margin-top:12px;display:flex;justify-content:space-between">
-            <button class="btn ghost" id="backToBank">Back</button>
-            <button class="btn" id="submitReg">Agree & Register</button>
-          </div>
+        <div class="col"><label>Subcategory *</label>
+          <select id="subCategory" class="gold-input-select">
+            <option value="">Choose main first</option>
+          </select>
         </div>
       </div>
-    </div>
-
-    <!-- LOGIN -->
-    <div id="login" class="card hidden" style="margin-top:12px">
-      <h3>Login</h3>
-      <div class="muted">Enter username (email) and password.</div>
-      <div style="margin-top:12px">
-        <label>Username (email)</label>
-        <input id="loginEmail" type="email" placeholder="you@example.com">
-        <label>Password</label>
-        <input id="loginPassword" type="password">
-        <div style="display:flex;gap:10px;margin-top:10px">
-          <button id="loginBtn" class="btn">Login</button>
-          <button id="forgotBtn" class="btn ghost">Forgot password</button>
+      <!-- NEW SUBCATEGORY INPUT -->
+      <div class="row">
+        <div class="col">
+          <label>Add Subcategory</label>
+          <input type="text" id="addSubcategoryInput" placeholder="Enter new subcategory">
+          <button type="button" class="btn" id="addSubcategoryBtn">Add Subcategory</button>
         </div>
-        <div id="loginMsg" style="margin-top:10px;color:#ffb4a2"></div>
+      </div>
+      <!-- ... terms & buttons ... -->
+      <div id="termsWrap" class="small hidden" style="margin-top:12px;background:rgba(255,255,255,0.02);padding:10px;border-radius:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><strong>Terms & Reference</strong></div>
+          <div><a id="termsLink" href="#" target="_blank" style="color:var(--accent)">Open link</a></div>
+        </div>
+        <div style="margin-top:8px"><label style="color:var(--muted)"><input id="agreeTC" type="checkbox"> I have read & agree</label></div>
+      </div>
+      <div style="margin-top:12px;display:flex;justify-content:space-between">
+        <button class="btn ghost" id="backToBank">Back</button>
+        <button class="btn" id="submitReg">Agree & Register</button>
       </div>
     </div>
-
-    <!-- DASHBOARD -->
-    <div id="dashboard" class="card hidden" style="margin-top:12px">
-      <div class="wrap">
-        <aside class="sidebar">
-          <div style="display:flex;align-items:center;gap:12px">
-            <img src="logo.jpg" alt="Logo" style="height:48px;width:48px;border-radius:8px" onerror="this.style.display='none'">
-            <div>
-              <div id="welcomeUser" style="font-weight:800;color:var(--accent)">Welcome</div>
-              <div id="userRoleSmall" class="small"></div>
-            </div>
-          </div>
-
-          <div class="profile-box" style="margin-top:12px">
-            <div style="display:flex;gap:12px;align-items:center">
-              <div id="avatar" class="avatar">IMG</div>
-              <div>
-                <div id="pname" style="font-weight:800"></div>
-                <div id="pid" class="small"></div>
-                <div id="pcat" class="small"></div>
-              </div>
-            </div>
-
-            <div style="margin-top:10px">
-              <label class="small">Upload profile photo</label>
-              <input type="file" id="profilePhoto" accept="image/*">
-            </div>
-          </div>
-
-          <div style="margin-top:12px" class="navcol">
-            <button data-tab="home" class="active" onclick="openTab('home', this)">Home <span id="notifBadge" style="float:right" class="badge hidden">0</span></button>
-            <button data-tab="attendance" onclick="openTab('attendance', this)">Attendance</button>
-            <button data-tab="staff" onclick="openTab('staff', this)">Staff</button>
-            <button data-tab="tasks" onclick="openTab('tasks', this)">Tasks</button>
-            <button data-tab="duties" onclick="openTab('duties', this)">Duties</button>
-            <button data-tab="roadmap" onclick="openTab('roadmap', this)">Roadmap</button>
-            <button data-tab="payments" onclick="openTab('payments', this)">Payments</button>
-            <button data-tab="calendar" onclick="openTab('calendar', this)">Calendar</button>
-            <button data-tab="voting" onclick="openTab('voting', this)">Voting</button>
-            <button data-tab="logout" style="color:#ffb4a2" onclick="logout()">Logout</button>
-          </div>
-        </aside>
-
-        <main class="main">
-          <h3 id="centerTitle">Welcome</h3>
-
-          <div id="tab-home">
-            <h4>Home</h4>
-            <div class="small">Post updates (demo)</div>
-            <div style="margin-top:8px">
-              <textarea id="postText" placeholder="Share update..." style="width:100%;"></textarea>
-              <div class="flex" style="margin-top:8px">
-                <input id="postFile" type="file" accept="video/*,image/*">
-                <button class="btn" id="postBtn">Post</button>
-              </div>
-              <div id="posts" style="margin-top:12px"></div>
-            </div>
-          </div>
-
-          <div id="tab-attendance" class="hidden">
-            <h4>Attendance</h4>
-            <div class="small">Clock In / Out and upload selfie</div>
-            <div style="margin-top:8px">
-              <div class="flex">
-                <button id="clockIn" class="btn">Clock In</button>
-                <button id="clockOut" class="btn ghost">Clock Out</button>
-              </div>
-              <div style="margin-top:8px">
-                <label>Upload selfie</label> <input type="file" id="selfie" accept="image/*">
-              </div>
-              <div id="attLog" style="margin-top:8px"></div>
-            </div>
-          </div>
-
-          <div id="tab-staff" class="hidden">
-            <h4>Staff</h4>
-            <div class="small">Staff list from your main category down to Group Leader</div>
-            <div style="margin-top:8px">
-              <label>Staff members</label>
-              <select id="staffList" style="min-width:220px;background:#fff;color:#000"></select>
-              <div class="small" style="margin-top:8px">Shows roles from your category down to Group Leader (if any).</div>
-            </div>
-          </div>
-
-          <div id="tab-tasks" class="hidden">
-            <h4>Tasks</h4>
-            <div style="display:flex;gap:12px;margin-top:8px">
-              <div style="flex:1">
-                <label>Title</label><input id="taskTitle">
-                <label>Description</label><textarea id="taskDesc"></textarea>
-                <label>Assign to</label><select id="assignTo" style="background:#fff;color:#000"></select>
-                <label>Priority</label><select id="priority"><option>High</option><option>Medium</option><option>Low</option></select>
-                <label>Deadline</label><input id="deadline" type="date">
-                <label>Attachment</label><input id="taskAttach" type="file">
-                <label>Status</label><select id="taskStatus"><option>Pending</option><option>Running</option><option>Complete</option><option>Rejected</option></select>
-                <div style="margin-top:8px"><button class="btn" id="createTask">Create Task</button></div>
-              </div>
-              <div style="flex:1">
-                <h5>My tasks</h5>
-                <div id="myTasks"></div>
-              </div>
-            </div>
-          </div>
-
-          <div id="tab-duties" class="hidden">
-            <h4>Duties</h4>
-            <div id="dutiesBox" class="small muted">Loading duties link...</div>
-          </div>
-
-          <div id="tab-roadmap" class="hidden">
-            <h4>Roadmap</h4>
-            <div id="roadmapBox" class="small muted">Loading roadmap link...</div>
-          </div>
-
-          <div id="tab-payments" class="hidden">
-            <h4>Payments</h4>
-            <div id="paymentsBox" class="small muted">Loading payment details...</div>
-          </div>
-
-          <div id="tab-calendar" class="hidden">
-            <h4>Calendar</h4>
-            <div id="calendarControls" style="display:flex;justify-content:space-between;align-items:center">
-              <div><button class="btn ghost" id="prevMonth">◀</button> <span id="calMonthYear" class="small"></span> <button class="btn ghost" id="nextMonth">▶</button></div>
-              <div><button class="btn" id="addEventBtn">Add Event</button></div>
-            </div>
-            <div class="calendar" id="calendarGrid" style="margin-top:12px"></div>
-          </div>
-
-          <div id="tab-voting" class="hidden">
-            <h4>Voting</h4>
-            <div id="votingBox" class="small muted">Voting area</div>
-            <div style="margin-top:10px" id="votingUI"></div>
-          </div>
-
-        </main>
-      </div>
-    </div>
-
-    <footer>Developed by Bushra Bagwan — demo</footer>
   </div>
+</div>
+<!-- ... rest of page ... -->
 
 <script>
-/* ==========================
-   Configuration & Data
-   ========================== */
-const WEB_APP_URL="https://script.google.com/macros/s/AKfycbxwOKV8qDzXmAOnZxqqYpbBgLxNRzYAL7OvuiMaOUkD1y7FgUzUL0WPuZf3lSwKl0NX/exec";
-const SHEET_ID = '1fbc1IlJ93dDL-0B30vzLaqnJgxmW_pWfRj5Crz7gmLA';
-const DRIVE_FOLDER_ID = '13xV6PAS1LC81BxfryTzyb2IwpHSZSFc1';
+/* ... existing JS ... */
 
-/* small mapping of payments that you provided (truncated / exact) */
-const paymentMap = {
-  gaarrkh: {
-    central: { 'Chairman': '100000','Vice Chairman':'100000','Managing Director':'50000','Executive Director':'50000','Operations and CEO':'50000','COO':'50000','CFO':'50000','CHRO':'50000','CTO':'50000','CMO':'50000','IT and security officer':'50000','Legal advisor':'50000','Reception manager':'50000','Office admin':'50000','Shift Supervisor':'50000','Digital reply operator':'50000','Office Boy/Girl':'50000','Membership and franchise development head':'50000','Grievance and redressal officer':'50000' },
-    state: {'State Administrative officer':'100000','State project coordinator':'80000','Office boy':'35000','State public relations officer':'40000','State finance and accountant officer':'50000'},
-    divisional: {'Divisional administrative officer':'80000','Accountant':'30000','Detective':'30000','Office boy':'30000','Auditor':'30000'},
-    zone: {'Zone Administrative officer':'70000','Branch Coordinator + Marketing Head':'25000','Accounting + CSR Assistant':'25000','Zone IT Officer':'25000','Service Tracking Coordinator':'25000','Office Boy':'25000'},
-    cluster: {'Cluster Administrative Officer':'0.1%','Lawyer':'20000','Finance and Operations Controller':'20000','Marketing Officer':'20000','Office Boy':'20000'},
-    miniCluster: {'Mini Cluster Head':'0.1%','HR Officer':'15000','Accountant':'15000','Office Boy':'8000'},
-    groupLeader: {'Group Leader':'7%','Group Leader Assistant':'4000'},
-    worker: {'Worker':'N/A'}
-  },
-  shivshakti: {
-    central: {'Central President':'100000','Vice President':'100000','General Secretary':'100000','Organising Minister':'100000','Head of Media and Communication':'100000','Head of Culture & Events':'100000','Head of Training & Skill Development':'100000','Treasurer / Head of Finance':'100000','Head of Justice & Grievance Redressal':'100000','Head of Research and Policy Planning':'100000'},
-    state: {'Head of State Liaison and Awareness':'70000','State Security Coordinator':'70000','Justice Officer':'70000','State Planning and Development Coordinator':'70000','Receptionist':'40000','State Leadership Representative':'70000'},
-    divisional: {'Divisional Public Relations Officer':'35000','Divisional Justice Officer':'35000','Divisional Security Coordinator':'35000'},
-    zone: {'Zone Leadership Representative':'35000','Zone Justice Chief':'35000','Zone Security Coordinator':'35000','Women’s Planning Coordinator':'35000','Receptionist':'35000'},
-    cluster: {'Cluster Public Representative':'18000','Cluster Justice Officer':'18000','Cluster Marketing Officer 1':'18000'},
-    miniCluster: {'Village Coordinator Leader':'15000','Village Security Coordinator 1':'15000','Village Security Coordinator 2':'15000','Village Security Coordinator 3':'15000','Village Security Coordinator 4':'15000','Receptionist':'15000'},
-    groupLeader: {'Adyaksh (President)':'3900','Sachiv (Secretary)':'3900','Khajindar (Treasurer)':'3900'},
-    sabhasad: {'Sabhasad':'N/A'}
-  }
-};
+// ---- SUBCATEGORY ADDITION ----
 
-/* Terms / links: we use your previously uploaded mappings saved in localStorage if present.
-   If not present, you already included many mappings in earlier versions — for simplicity we
-   fallback to a minimal example link. */
-const defaultTermLink = 'https://docs.google.com/document/';
-
+// Helper to get orgData from localStorage
 function getOrgData() {
   try { return JSON.parse(localStorage.getItem('orgData')) || {}; } catch(e){ return {}; }
 }
 
-/* Candidates for Shivshakti Group Leader elections */
-const shivCandidates = ['Adhyaksh','Sachiv','Khajindar'];
-
-/* ==========================
-   UI Helpers & Navigation
-   ========================== */
-function showScreen(id){
-  ['welcomeCard','selectOrg','registerCard','login','dashboard'].forEach(x=>{
-    const el = document.getElementById(x);
-    if(el) el.classList.add('hidden');
-  });
-  const target = document.getElementById(id);
-  if(target) target.classList.remove('hidden');
-  window.scrollTo(0,0);
-}
-showScreen('welcomeCard');
-
-/* Step / button wiring */
-const btnGaarrkh = document.getElementById('btn-gaarrkh');
-const btnShiv = document.getElementById('btn-shivshakti');
-[btnGaarrkh, btnShiv].forEach(b=>{
-  b && b.addEventListener('click', ()=> {
-    document.querySelectorAll('.level-btn').forEach(x=>x.classList.remove('selected'));
-    b.classList.add('selected');
-    document.getElementById('reg_level').value = b.dataset.level;
-    document.getElementById('showLevel').value = b.dataset.level === 'gaarrkh' ? 'Gaarrkh' : 'Shivshakti';
-  });
-});
-
-document.getElementById('toStep2').addEventListener('click', ()=>{
-  showScreen('registerCard');
-  // default selection if none picked:
-  if(!document.getElementById('reg_level').value) {
-    btnGaarrkh && btnGaarrkh.classList.add('selected');
-    document.getElementById('reg_level').value = 'gaarrkh';
-    document.getElementById('showLevel').value = 'Gaarrkh';
-  }
-});
-
-/* Generate registration ID */
-function genId(levelKey){
-  const d=new Date();
-  const y = d.getFullYear();
-  const m = String(d.getMonth()+1).padStart(2,'0');
-  const dd = String(d.getDate()).padStart(2,'0');
-  const r = String(Math.floor(Math.random()*9000)+1000);
-  const pref = levelKey==='shivshakti' ? 'SHIV' : (levelKey==='gaarrkh' ? 'GAAR' : 'USER');
-  return pref + '-' + y + m + dd + '-' + r;
-}
-document.getElementById('regen').addEventListener('click', ()=> {
-  document.getElementById('regId').value = genId(document.getElementById('reg_level').value || 'gaarrkh');
-});
-document.getElementById('toBank').addEventListener('click', ()=>{
-  const f = document.getElementById('regForm');
-  if(!f.checkValidity()) { f.reportValidity(); return; }
-  document.getElementById('regId').value = genId(document.getElementById('reg_level').value || 'gaarrkh');
-  document.getElementById('regStep2').classList.add('hidden');
-  document.getElementById('regStep3').classList.remove('hidden');
-});
-document.getElementById('backToPersonal').addEventListener('click', ()=>{
-  document.getElementById('regStep3').classList.add('hidden');
-  document.getElementById('regStep2').classList.remove('hidden');
-});
-document.getElementById('toCategory').addEventListener('click', ()=>{
-  if(!document.getElementById('accHolder').value || !document.getElementById('accNumber').value || !document.getElementById('bankName').value || !document.getElementById('ifsc').value){ alert('Fill bank details'); return; }
-  if(!document.getElementById('password').value || !document.getElementById('password2').value){ alert('Enter password & confirm'); return; }
-  if(document.getElementById('password').value !== document.getElementById('password2').value){ alert('Password mismatch'); return; }
-  document.getElementById('username').value = document.getElementById('email').value.trim();
-  document.getElementById('regStep3').classList.add('hidden');
-  document.getElementById('regStep4').classList.remove('hidden');
-});
-
-/* Back buttons */
-document.getElementById('backToSelect') && document.getElementById('backToSelect').addEventListener('click', ()=> showScreen('selectOrg'));
-document.getElementById('backToBank') && document.getElementById('backToBank').addEventListener('click', ()=>{
-  document.getElementById('regStep4').classList.add('hidden'); document.getElementById('regStep3').classList.remove('hidden');
-});
-
-/* Main & Sub categories population using orgData (provided earlier) */
+// Populate subcategories based on main category selection
 function populateSubs(){
   const main = document.getElementById('mainCategory').value;
   const level = document.getElementById('reg_level').value || 'gaarrkh';
@@ -526,606 +127,28 @@ document.getElementById('subCategory').addEventListener('change', ()=>{
   }
 });
 
-/* ==========================
-   Register submit (local + try server)
-   ========================== */
-document.getElementById('submitReg').addEventListener('click', async ()=>{
-  const main = document.getElementById('mainCategory').value, sub = document.getElementById('subCategory').value;
-  if(!main || !sub){ alert('Choose main & subcategory'); return; }
-  if(!document.getElementById('agreeTC').checked && !document.getElementById('termsWrap').classList.contains('hidden')){ alert('Agree to Terms'); return; }
-
-  const user = {
-    registrationId: document.getElementById('regId').value || genId(document.getElementById('reg_level').value),
-    level: document.getElementById('reg_level').value || 'gaarrkh',
-    fullname: document.getElementById('fullName').value.trim(),
-    email: document.getElementById('email').value.trim(),
-    mobile: document.getElementById('mobile').value.trim(),
-    altMobile: document.getElementById('altMobile').value.trim(),
-    state: document.getElementById('state').value.trim(),
-    city: document.getElementById('city').value.trim(),
-    pincode: document.getElementById('pincode').value.trim(),
-    address: document.getElementById('address') ? document.getElementById('address').value.trim() : '',
-    serviceCity: document.getElementById('serviceCity').value.trim(),
-    serviceZip: document.getElementById('serviceZip').value.trim(),
-    aadhaar: document.getElementById('aadhaar').value.trim(),
-    pan: document.getElementById('pan').value.trim(),
-    accHolder: document.getElementById('accHolder').value.trim(),
-    accNumber: document.getElementById('accNumber').value.trim(),
-    bankName: document.getElementById('bankName').value.trim(),
-    ifsc: document.getElementById('ifsc').value.trim(),
-    username: document.getElementById('username').value || document.getElementById('email').value.trim(),
-    password: document.getElementById('password').value,
-    mainCategory: main,
-    subCategory: sub,
-    termsLink: (document.getElementById('termsWrap').classList.contains('hidden') ? null : document.getElementById('termsLink').href),
-    submittedAt: new Date().toISOString()
-  };
-
-  // Save locally (offline)
-  const users = JSON.parse(localStorage.getItem('users')||'[]');
-  // prevent duplicates by username
-  if(users.some(u=>u.username && u.username.toLowerCase() === (user.username||'').toLowerCase())){
-    alert('User already exists locally — try login.');
-    showScreen('login'); return;
-  }
-  users.push(user);
-  localStorage.setItem('users', JSON.stringify(users));
-  alert('Registered locally ✅ — attempting server sync (optional)...');
-
-  // try server sync (best effort)
-  try{
-    await fetch(WEB_APP_URL, {
-      method:'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({action:'register', body:user})
-    }).then(r=>r.json()).then(resp=>{
-      if(resp && resp.status === 'ok') alert('Synced to server ✅');
-      else console.log('Server register response:', resp);
-    }).catch(e=>{ console.log('Server register error', e); });
-  }catch(e){ console.log('Sync failed', e); }
-
-  showScreen('login');
-});
-
-/* Auto fill username from email */
-document.getElementById('email').addEventListener('input', ()=> document.getElementById('username').value = document.getElementById('email').value.trim());
-
-/* ==========================
-   HYBRID LOGIN (local first, then server)
-   ========================== */
-function findUserLocal(username){
-  const users = JSON.parse(localStorage.getItem('users')||'[]');
-  return users.find(x=> x.username && x.username.toLowerCase() === (username||'').toLowerCase());
-}
-document.getElementById('loginBtn').addEventListener('click', async ()=>{
-  const u = document.getElementById('loginEmail').value.trim();
-  const p = document.getElementById('loginPassword').value;
-  if(!u || !p){ document.getElementById('loginMsg').textContent='Enter username and password'; return; }
-  document.getElementById('loginMsg').textContent='';
-
-  // local check
-  const localUser = findUserLocal(u);
-  if(localUser){
-    if(localUser.password === p){
-      sessionStorage.setItem('loggedUser', JSON.stringify(localUser));
-      openDashboardForUser(localUser);
-      return;
-    } else {
-      document.getElementById('loginMsg').textContent = 'Incorrect password (local)';
-      // do NOT return — optionally try server below
-    }
-  }
-
-  // try server login (best effort)
-  try{
-    const resp = await fetch(WEB_APP_URL, {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({action:'login', body:{username:u, password:p}})
-    }).then(r=>r.json());
-
-    if(resp && resp.status === 'ok' && resp.user){
-      // save to local cache for offline login later
-      localUser ? Object.assign(localUser, resp.user) : (function(){ const arr = JSON.parse(localStorage.getItem('users')||'[]'); arr.push(resp.user); localStorage.setItem('users', JSON.stringify(arr)); })();
-      sessionStorage.setItem('loggedUser', JSON.stringify(resp.user));
-      openDashboardForUser(resp.user);
-      return;
-    } else {
-      document.getElementById('loginMsg').textContent = resp && resp.message ? resp.message : 'Login failed (server)';
-    }
-  }catch(err){
-    document.getElementById('loginMsg').textContent = 'Offline / server unreachable. If registered locally, login using local credentials.';
-    console.log('server login error', err);
-  }
-});
-
-/* Forgot password demo */
-document.getElementById('forgotBtn').addEventListener('click', ()=>{
-  const u = prompt('Enter your registered email/username (demo).');
-  if(!u) return;
-  const user = findUserLocal(u);
-  if(!user) { alert('User not found locally.'); return; }
-  alert('Demo: Your password is: ' + user.password);
-});
-
-/* ==========================
-   DASHBOARD: OPEN / RENDER
-   ========================== */
-function openDashboardForUser(user){
-  if(!user){ showScreen('login'); return; }
-  showScreen('dashboard');
-  const logged = user || JSON.parse(sessionStorage.getItem('loggedUser')||'null');
-  if(!logged){ alert('No user'); showScreen('login'); return; }
-
-  document.getElementById('centerTitle').textContent = `Welcome to ${(logged.level==='gaarrkh') ? 'Gaarrkh' : 'Shivshakti'}`;
-  document.getElementById('pname').textContent = logged.fullname || logged.username;
-  document.getElementById('pid').textContent = logged.registrationId || '';
-  document.getElementById('pcat').textContent = `${logged.mainCategory || ''} — ${logged.subCategory || ''}`;
-  document.getElementById('welcomeUser').textContent = `Welcome, ${(logged.fullname||logged.username)}`;
-  document.getElementById('userRoleSmall').textContent = `${logged.level} · ${logged.mainCategory}`;
-
-  // avatar / profile photo
-  const avatar = document.getElementById('avatar');
-  const storedPhoto = localStorage.getItem('profile_' + (logged.username||''));
-  if(storedPhoto){
-    avatar.innerHTML = '<img src="'+storedPhoto+'" style="width:72px;height:72px;border-radius:8px;object-fit:cover">';
-  } else {
-    avatar.textContent = (logged.fullname||logged.username).split(' ').map(s=>s[0]).slice(0,2).join('');
-  }
-
-  // populate staff chain & assign
-  populateStaffChain(logged);
-  populateAssignTo();
-
-  // render tasks / posts / attendance / payments / duties / roadmap / leave & Report 
-  renderPosts();
-  updateAtt();
-  renderMyTasks();
-  renderLinksForUser(logged);
-  renderNotificationsBadge();
-  renderCalendar();
-  renderVotingUI(logged);
-}
-
-/* staffs from mainCategory down to groupLeader (categoryOrder preserved) */
-const categoryOrder = ['central','state','divisional','zone','cluster','miniCluster','groupLeader','worker','sabhasad'];
-
-function populateStaffChain(logged){
-  const start = logged.mainCategory;
-  const level = logged.level;
-  const ordIdx = categoryOrder.indexOf(start);
-  let chainRoles = [];
-  const orgData = getOrgData();
-  if(ordIdx === -1){
-    const obj = orgData[level] && orgData[level][start];
-    if(obj && obj.subs) chainRoles = obj.subs.slice();
-  } else {
-    for(let i = ordIdx; i <= categoryOrder.indexOf('groupLeader') && i < categoryOrder.length; i++){
-      const ct = categoryOrder[i];
-      const obj = orgData[level] && orgData[level][ct];
-      if(obj && obj.subs) chainRoles = chainRoles.concat(obj.subs);
-    }
-  }
-  chainRoles = [...new Set(chainRoles)];
-  sessionStorage.setItem('staffChain', JSON.stringify(chainRoles));
-  const staffSel = document.getElementById('staffList');
-  staffSel.innerHTML = '';
-  if(!chainRoles.length){ const o=document.createElement('option'); o.textContent='No staff roles found'; staffSel.appendChild(o); return; }
-  chainRoles.forEach(r=>{ const o=document.createElement('option'); o.value=r; o.textContent=r; staffSel.appendChild(o); });
-}
-
-function populateAssignTo(){
-  const assignSel = document.getElementById('assignTo');
-  assignSel.innerHTML = '';
-  const chain = JSON.parse(sessionStorage.getItem('staffChain')||'[]');
-  if(!chain.length){ assignSel.innerHTML = '<option>No subordinate roles</option>'; return; }
-  chain.forEach(s=>{ const o=document.createElement('option'); o.value=s; o.textContent=s; assignSel.appendChild(o); });
-}
-
-/* Duties/roadmap/payments rendering */
-function renderLinksForUser(logged){
-  const orgData = getOrgData();
-  let dutiesLink = '';
-  let roadmapLink = '';
-  let pay = '';
-  try{
-    if(orgData && orgData[logged.level] && orgData[logged.level][logged.mainCategory]){
-      const obj = orgData[logged.level][logged.mainCategory];
-      dutiesLink = (obj.duties && obj.duties[logged.subCategory]) || obj.subLinks && obj.subLinks[logged.subCategory] || obj.mainLink || '';
-      roadmapLink = (obj.roadmap && obj.roadmap[logged.subCategory]) || (obj.roadmap && obj.roadmap[logged.subCategory]) || '';
-      pay = (paymentMap[logged.level] && paymentMap[logged.level][logged.mainCategory] && paymentMap[logged.level][logged.mainCategory][logged.subCategory]) || (paymentMap[logged.level] && paymentMap[logged.level][logged.mainCategory] && Object.values(paymentMap[logged.level][logged.mainCategory])[0]) || '';
-    }
-  }catch(e){}
-  document.getElementById('dutiesBox').innerHTML = dutiesLink ? `<a href="${dutiesLink}" target="_blank" style="color:var(--accent)">Open Duties for ${logged.subCategory}</a>` : 'No duties link available.';
-  document.getElementById('roadmapBox').innerHTML = roadmapLink ? `<a href="${roadmapLink}" target="_blank" style="color:var(--accent)">Open Roadmap</a>` : 'No roadmap link available.';
-  document.getElementById('paymentsBox').innerHTML = pay ? `Payment: <strong style="color:var(--accent)">${pay}</strong>` : `Payment details not found in demo.`;
-}
-
-/* Find local links (fallback) */
-function findLinksLocal(level, main, sub){
-  const orgData = getOrgData();
-  if(orgData && orgData[level] && orgData[level][main]){
-    const obj = orgData[level][main];
-    const duty = (obj.duties && obj.duties[sub]) || (obj.subLinks && obj.subLinks[sub]) || obj.mainLink || '';
-    const road = (obj.roadmap && obj.roadmap[sub]) || '';
-    const pay = paymentMap[level] && paymentMap[level][main] && paymentMap[level][main][sub] || '';
-    return {duties:duty, roadmap:road, payment:pay};
-  }
-  return {};
-}
-
-/* ==========================
-   POSTS
-   ========================== */
-function renderPosts(){
-  const posts = JSON.parse(localStorage.getItem('posts')||'[]');
-  const root = document.getElementById('posts'); root.innerHTML = '';
-  posts.forEach(p=>{
-    const el = document.createElement('div'); el.style.border='1px solid rgba(255,255,255,0.03)'; el.style.padding='8px'; el.style.marginBottom='8px'; el.style.borderRadius='8px';
-    el.innerHTML = `<div style="font-weight:700">${p.by}</div><div style="font-size:13px;margin-top:6px;color:var(--muted)">${(p.text||'')}</div><div class="small" style="margin-top:6px">${new Date(p.at).toLocaleString()}</div>`;
-    if(p.fileName) el.innerHTML += `<div class="small">Attachment: ${p.fileName}</div>`;
-    root.appendChild(el);
-  });
-}
-document.getElementById('postBtn').addEventListener('click', ()=>{
-  const logged = JSON.parse(sessionStorage.getItem('loggedUser')||'null'); if(!logged){ alert('Login first'); return; }
-  const text = document.getElementById('postText').value.trim(); const f = document.getElementById('postFile').files[0];
-  const posts = JSON.parse(localStorage.getItem('posts')||'[]');
-  posts.unshift({by: logged.username, text, fileName: f ? f.name : null, at: new Date().toISOString()});
-  localStorage.setItem('posts', JSON.stringify(posts));
-  renderPosts();
-});
-
-/* ==========================
-   ATTENDANCE
-   ========================== */
-const attLog = document.getElementById('attLog');
-document.getElementById('clockIn').addEventListener('click', ()=>{ addAttendance('in'); });
-document.getElementById('clockOut').addEventListener('click', ()=>{ addAttendance('out'); });
-function addAttendance(type){
-  const logged = JSON.parse(sessionStorage.getItem('loggedUser')||'null'); if(!logged){ alert('Login first'); return; }
-  const list = JSON.parse(localStorage.getItem('attendance')||'[]');
-  list.push({user: logged.username, type, at: new Date().toISOString()});
-  localStorage.setItem('attendance', JSON.stringify(list));
-  updateAtt();
-  // notify upward levels
-  notifyUpward(logged, `${logged.username} did ${type} attendance`);
-}
-function updateAtt(){
-  const logged = JSON.parse(sessionStorage.getItem('loggedUser')||'null'); if(!logged){ attLog.innerHTML=''; return; }
-  const list = JSON.parse(localStorage.getItem('attendance')||'[]').filter(a=>a.user===logged.username);
-  attLog.innerHTML = list.map(a=>`${a.type.toUpperCase()} — ${new Date(a.at).toLocaleString()}`).join('<br>');
-}
-
-/* ==========================
-   TASKS & Notifications
-   ========================== */
-document.getElementById('createTask').addEventListener('click', async ()=>{
-  const logged = JSON.parse(sessionStorage.getItem('loggedUser')||'null'); if(!logged){ alert('Login first'); return; }
-  const t = {
-    id: 'T'+Date.now(),
-    title: document.getElementById('taskTitle').value.trim(),
-    desc: document.getElementById('taskDesc').value.trim(),
-    assignTo: document.getElementById('assignTo').value,
-    priority: document.getElementById('priority').value,
-    deadline: document.getElementById('deadline').value,
-    status: document.getElementById('taskStatus').value,
-    createdBy: logged.username,
-    at: new Date().toISOString()
-  };
-  const tasks = JSON.parse(localStorage.getItem('tasks')||'[]'); tasks.push(t); localStorage.setItem('tasks', JSON.stringify(tasks));
-  renderMyTasks();
-  // create notification for assignee
-  createNotification({fromUser: logged.username, toUser: t.assignTo, message: 'New task assigned: ' + t.title});
-  alert('Task created and notification sent.');
-  // try server push (best effort)
-  try{
-    await fetch(WEB_APP_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'createTask', body:t})});
-  }catch(e){}
-});
-
-function renderMyTasks(){
-  const logged = JSON.parse(sessionStorage.getItem('loggedUser')||'null'); if(!logged) return;
-  const all = JSON.parse(localStorage.getItem('tasks')||'[]');
-  const my = all.filter(x=> x.createdBy === logged.username || x.assignTo === logged.subCategory || x.assignTo === logged.username);
-  const out = document.getElementById('myTasks'); out.innerHTML='';
-  my.forEach(t=>{
-    const d = document.createElement('div'); d.className='task-item';
-    d.innerHTML = `<div style="font-weight:800">${t.title}</div>
-      <div class="small" style="color:var(--muted)">${t.desc}</div>
-      <div class="small">AssignTo: ${t.assignTo} • Priority: ${t.priority} • Status: ${t.status}</div>
-      <div style="margin-top:6px"><button class="btn ghost" onclick="updateStatusPrompt('${t.id}')">Update Status</button></div>`;
-    out.appendChild(d);
-  });
-}
-function updateStatusPrompt(id){
-  const all = JSON.parse(localStorage.getItem('tasks')||'[]');
-  const t = all.find(x=>x.id===id); if(!t) return;
-  const s = prompt('Enter new status (Pending / Running / Complete / Rejected)', t.status);
-  if(s){ t.status = s; localStorage.setItem('tasks', JSON.stringify(all)); renderMyTasks(); alert('Status updated'); }
-}
-
-/* Notifications stored in sheet 'Notifications' or localStorage 'notifications' */
-function createNotification(obj){
-  // obj: {fromUser, toUser, message}
-  const id = 'N' + Date.now();
-  const now = new Date().toISOString();
-  const not = {id, fromUser: obj.fromUser||'', toUser: obj.toUser||'', message: obj.message||'', at: now, read:'false'};
-  const arr = JSON.parse(localStorage.getItem('notifications')||'[]'); arr.unshift(not); localStorage.setItem('notifications', JSON.stringify(arr));
-  renderNotificationsBadge();
-  // try server save
-  fetch(WEB_APP_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'postNotification', body:not})}).catch(()=>{});
-}
-
-/* Notifications upward: notify from group leader up to central (role chain) */
-function notifyUpward(user, message){
-  // send notification to all higher-level roles (we'll just send to 'admin' and 'groupLeader' for demo)
-  createNotification({fromUser: user.username, toUser: 'admin', message});
-  createNotification({fromUser: user.username, toUser: 'groupLeader', message});
-}
-
-/* Notifications badge */
-function renderNotificationsBadge(){
-  const logged = JSON.parse(sessionStorage.getItem('loggedUser')||'null');
-  let count = 0;
-  if(logged){
-    const nots = JSON.parse(localStorage.getItem('notifications')||'[]');
-    count = nots.filter(n => n.toUser === logged.username || n.toUser === logged.subCategory || n.toUser === 'all' || n.toUser === 'admin' || n.toUser === 'groupLeader').length;
-  }
-  const b = document.getElementById('notifBadge');
-  if(count > 0){ b.textContent = count; b.classList.remove('hidden'); } else { b.classList.add('hidden'); }
-}
-
-/* ==========================
-   PROFILE PHOTO: upload & store local + server
-   ========================== */
-document.getElementById('profilePhoto').addEventListener('change', (e)=>{
-  const f = e.target.files[0];
-  if(!f) return;
-  const reader = new FileReader();
-  reader.onload = function(evt){
-    const dataUrl = evt.target.result;
-    const logged = JSON.parse(sessionStorage.getItem('loggedUser')||'null'); if(!logged){ alert('Login first'); return; }
-    localStorage.setItem('profile_' + logged.username, dataUrl);
-    // update UI
-    document.getElementById('avatar').innerHTML = '<img src="'+dataUrl+'" style="width:72px;height:72px;border-radius:8px;object-fit:cover">';
-    // try server upload (base64)
-    fetch(WEB_APP_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'uploadFile', body:{filename: logged.username + '_profile.jpg', dataUrl}})}).then(r=>r.json()).then(resp=>{
-      if(resp && resp.status === 'ok' && resp.fileUrl){
-        // save profile url server-side (optional)
-        fetch(WEB_APP_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'updateProfilePhoto', body:{username: logged.username, fileUrl: resp.fileUrl}})}).catch(()=>{});
-      }
-    }).catch(()=>{});
-  };
-  reader.readAsDataURL(f);
-});
-
-/* ==========================
-   CALENDAR (basic)
-   ========================== */
-let currentCal = new Date();
-function renderCalendar(){
-  const grid = document.getElementById('calendarGrid');
-  grid.innerHTML = '';
-  const year = currentCal.getFullYear(), month = currentCal.getMonth();
-  document.getElementById('calMonthYear').textContent = currentCal.toLocaleString('default',{month:'long'}) + ' ' + year;
-  const first = new Date(year, month, 1);
-  const startDay = first.getDay(); // 0..6
-  const days = new Date(year, month+1, 0).getDate();
-  // render blanks
-  for(let i=0;i<startDay;i++){
-    const d = document.createElement('div'); d.className='cal-day'; d.innerHTML=''; grid.appendChild(d);
-  }
-  for(let day=1; day<=days; day++){
-    const d = document.createElement('div'); d.className='cal-day';
-    d.innerHTML = `<div class="date">${day}</div><div class="small" id="events-${day}"></div>`;
-    grid.appendChild(d);
-  }
-}
-document.getElementById('prevMonth').addEventListener('click', ()=>{ currentCal.setMonth(currentCal.getMonth()-1); renderCalendar(); });
-document.getElementById('nextMonth').addEventListener('click', ()=>{ currentCal.setMonth(currentCal.getMonth()+1); renderCalendar(); });
-document.getElementById('addEventBtn').addEventListener('click', ()=>{
-  const d = prompt('Event date (YYYY-MM-DD)');
-  if(!d) return;
-  const title = prompt('Event title');
-  if(!title) return;
-  const events = JSON.parse(localStorage.getItem('calendarEvents')||'[]'); events.push({date:d, title}); localStorage.setItem('calendarEvents', JSON.stringify(events)); alert('Event added (local).'); renderCalendar();
-});
-
-/* ==========================
-   VOTING (Shivshakti: group leader candidates)
-   ========================== */
-function renderVotingUI(logged){
-  const box = document.getElementById('votingUI'); box.innerHTML = '';
-  if(!logged){ box.textContent = 'Login to vote'; return; }
-  // only show candidates for Shivshakti group leader election
-  const isShiv = (logged.level === 'shivshakti');
-  // candidates list (we show the 3 specified names as candidates always)
-  const votes = JSON.parse(localStorage.getItem('votes')||'{}');
-  // show counts
-  const counts = {}; shivCandidates.forEach(c=> counts[c] = 0);
-  Object.values(votes).forEach(v=> { if(counts[v]) counts[v]++; });
-  // If logged user is in a subcategory that is not group leader, allow vote; group leaders are candidates only (they shouldn't vote for themselves?)
-  const canVote = !(logged.mainCategory === 'groupLeader' && shivCandidates.includes(logged.subCategory));
-  let html = '<div style="display:flex;gap:12px">';
-  shivCandidates.forEach(c=>{
-    const alreadyVoted = votes[logged.username];
-    html += `<div style="background:rgba(255,255,255,0.02);padding:12px;border-radius:8px">
-      <div style="font-weight:800">${c}</div>
-      <div class="small">Votes: <strong style="color:var(--accent)">${counts[c]}</strong></div>
-      ${ alreadyVoted ? (alreadyVoted===c ? '<div class="small" style="color:var(--muted)">You voted</div>' : '<div class="small" style="color:var(--muted)">You already voted</div>') : (canVote ? `<div style="margin-top:8px"><button class="btn" onclick="castVote('${c}')">Vote</button></div>` : '<div class="small" style="color:var(--muted)">Cannot vote</div>') }
-    </div>`;
-  });
-  html += '</div>';
-  box.innerHTML = html;
-}
-function castVote(candidate){
-  const logged = JSON.parse(sessionStorage.getItem('loggedUser')||'null'); if(!logged){ alert('Login first'); return; }
-  const votes = JSON.parse(localStorage.getItem('votes')||'{}');
-  if(votes[logged.username]) { alert('You already voted'); renderVotingUI(logged); return; }
-  votes[logged.username] = candidate;
-  localStorage.setItem('votes', JSON.stringify(votes));
-  alert('Vote recorded for ' + candidate);
-  // update leader dashboard counts (if leader)
-  renderVotingUI(logged);
-  // try server post
-  fetch(WEB_APP_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'postVote', body:{username:logged.username,candidate}})}).catch(()=>{});
-}
-
-/* ==========================
-   Init: load if logged user exists in session
-   ========================== */
-function initIfLogged(){
-  const logged = JSON.parse(sessionStorage.getItem('loggedUser')||'null');
-  if(logged) openDashboardForUser(logged);
-}
-initIfLogged();
-
-/* Logout */
-function logout(){ sessionStorage.removeItem('loggedUser'); alert('Logged out'); showScreen('login'); }
-
-/* On storage change update lists */
-window.addEventListener('storage', ()=> { populateAssignTo(); populateStaffChain(JSON.parse(sessionStorage.getItem('loggedUser')||'null')); renderNotificationsBadge(); });
-
-/* ==========================
-   Voting / leave upward notifications and server actions are best-effort:
-   We send POSTs to WEB_APP_URL with action names; your Apps Script should implement actions:
-   register, login, createTask, uploadFile, postNotification, updateProfilePhoto, postVote
-   ========================== */
-
-/* small UI helpers */
-function openTab(tab, btn){
-  document.querySelectorAll('.navcol button').forEach(b=>b.classList.remove('active'));
-  if(btn) btn.classList.add('active');
-  document.querySelectorAll('[id^="tab-"]').forEach(t=>t.classList.add('hidden'));
-  const pane = document.getElementById('tab-'+tab);
-  if(pane) pane.classList.remove('hidden');
-}
-
-/* small render of calendar events on load */
-renderCalendar();
-
-/* render notifications badge periodically */
-setInterval(renderNotificationsBadge, 3000);
-
-</script>
-
-</script>
-
-</script>
-
-<!-- ================= ROADMAP + LEAVE & REPORT SYSTEM START ================= -->
-<script>
-/* ------------------ 🗺 ROLE-BASED ROADMAP LINKS ------------------ */
-const roadmapLinks = {
-  "Chairman": "https://docs.google.com/spreadsheets/d/1PYMgelarroRP2b2e-d1fNFh1svb_eOnq-ZYn9CJeju0/edit?usp=drivesdk",
-  "Vice Chairman": "https://docs.google.com/spreadsheets/d/1i-LE134EKTcXNsi0uoXb9kt782lDXyQAo5Qg--3sfK0/edit?usp=drivesdk",
-  "Managing Director": "https://docs.google.com/spreadsheets/d/1jVgohg7YVoMCsaoCjzklVFdMYgBId8I-njZpET4OPjY/edit?usp=drivesdk",
-  "Executive Director": "https://docs.google.com/spreadsheets/d/14hpHTitMvT_MpRbN5m9UgCZcI3YxK6m6q6NffQqZJfk/edit?usp=drivesdk",
-  "Operations and CEO": "https://docs.google.com/spreadsheets/d/1xhg1am4BAsdPNH0Hc4OrdTmFZisZYX6X42YHmFj4H2g/edit?usp=drivesdk",
-  "COO": "https://docs.google.com/spreadsheets/d/18tCc9UYplSRdQQoaFhki3flFb5K7PwNZkkG5dKpfoDA/edit?usp=drivesdk",
-  "CFO": "https://docs.google.com/spreadsheets/d/19-1FBbpS3JK-RWLj0qVCDIf4eQoaB9kzT7vz4Qq7Luw/edit?usp=drivesdk",
-  "CHRO": "https://docs.google.com/spreadsheets/d/13lnpZilqXtihuFipLB9bwbGSetqf_9KNwmyuwUB_HpY/edit?usp=drivesdk",
-  "CTO": "https://docs.google.com/spreadsheets/d/1VGwm9Inhml5PzzdsSlUrNca6-LqUO12K5g3hzcBuJCc/edit?usp=drivesdk",
-  "State Administrative Officer": "https://docs.google.com/spreadsheets/d/1KlzhVScSjmVAhZYYzX0PDCmQR9RDRq_sgg-yS6Is1E8/edit?usp=drivesdk"
-};
-
-function openRoleBasedRoadmap(user) {
-  if (!user || !user.role) {
-    alert("⚠️ No role found. Please log in first.");
+// ADD SUBCATEGORY BUTTON LOGIC
+document.getElementById('addSubcategoryBtn').addEventListener('click', function() {
+  const newSub = document.getElementById('addSubcategoryInput').value.trim();
+  const main = document.getElementById('mainCategory').value;
+  const level = document.getElementById('reg_level').value || 'gaarrkh';
+  if(!main) { alert('Select a main category first.'); return; }
+  if(!newSub) { alert('Enter a subcategory name.'); return; }
+  // Get orgData or create structure
+  let orgData = getOrgData();
+  if(!orgData[level]) orgData[level] = {};
+  if(!orgData[level][main]) orgData[level][main] = {subs:[]};
+  if(!Array.isArray(orgData[level][main].subs)) orgData[level][main].subs = [];
+  if(orgData[level][main].subs.includes(newSub)) {
+    alert('Subcategory already exists.');
     return;
   }
-  const link = roadmapLinks[user.role];
-  if (link) {
-    window.open(link, "_blank");
-  } else {
-    alert("❌ No roadmap found for your role: " + user.role);
-  }
-}
-
-document.addEventListener("DOMContentLoaded", function () {
-  const roadmapBtn = document.getElementById("roadmapBtn");
-  if (roadmapBtn) {
-    roadmapBtn.addEventListener("click", function () {
-      const user = JSON.parse(localStorage.getItem("user") || "{}");
-      openRoleBasedRoadmap(user);
-    });
-  }
+  orgData[level][main].subs.push(newSub);
+  localStorage.setItem('orgData', JSON.stringify(orgData));
+  populateSubs();
+  document.getElementById('addSubcategoryInput').value = '';
+  alert('Subcategory added!');
 });
+
 </script>
-
-<!-- ------------------ 📝 LEAVE & REPORT SYSTEM ------------------ -->
-<!-- Modal (hidden until clicked from sidebar) -->
-<div id="leaveModal" class="modal" style="display:none;
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.5); z-index: 10000; justify-content: center; align-items: center;">
-  <div style="background:#fff; border-radius:12px; padding:20px; width:90%; max-width:400px;">
-    <h3 style="text-align:center;">Submit Leave / Report</h3>
-
-    <label>Type</label>
-    <select id="lrType" style="width:100%; padding:8px; margin:5px 0;">
-      <option value="Leave">Leave</option>
-      <option value="Report">Report</option>
-    </select>
-
-    <label>Date</label>
-    <input type="date" id="lrDate" style="width:100%; padding:8px; margin:5px 0;">
-
-    <label>Message</label>
-    <textarea id="lrMsg" placeholder="Enter your message..." style="width:100%; padding:8px; margin:5px 0;"></textarea>
-
-    <button onclick="submitLeaveReport()" style="background:#ff7b9c; color:#fff; border:none; padding:10px 15px; border-radius:6px;">Submit</button>
-    <button onclick="closeLeaveReport()" style="background:#ccc; color:#333; border:none; padding:10px 15px; border-radius:6px;">Cancel</button>
-  </div>
-</div>
-
-<script>
-function openLeaveReport() {
-  document.getElementById('leaveModal').style.display = 'flex';
-}
-function closeLeaveReport() {
-  document.getElementById('leaveModal').style.display = 'none';
-}
-
-async function submitLeaveReport() {
-  const type = document.getElementById('lrType').value;
-  const date = document.getElementById('lrDate').value;
-  const message = document.getElementById('lrMsg').value;
-  const user = JSON.parse(localStorage.getItem('loggedUser') || '{}');
-
-  if (!date || !message) {
-    alert('Please fill all fields before submitting.');
-    return;
-  }
-
-  const body = {
-    action: 'markLeave',
-    username: user.username || 'Unknown',
-    role: user.role || 'Member',
-    date: date,
-    type: type,
-    message: message,
-    status: 'Pending'
-  };
-
-  try {
-    const res = await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-    if (res.ok) {
-      alert('✅ Leave/Report submitted successfully!');
-      closeLeaveReport();
-    } else {
-      alert('❌ Submission failed. Please try again.');
-    }
-  } catch (err) {
-    alert('⚠️ Network error, please check your connection.');
-    console.error(err);
-  }
-}
-</script>
-<!-- ================= ROADMAP + LEAVE & REPORT SYSTEM END ================= -->
-</body>
-</html>
+<!-- ... rest of page ... -->
