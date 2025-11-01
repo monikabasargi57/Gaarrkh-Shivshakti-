@@ -1,0 +1,57 @@
+<!-- Step 2: Personal -->
+<div id="regStep2">
+  <strong>Personal Details</strong>
+  <form id="regForm">
+    <input type="hidden" id="reg_level">
+    <div class="row">
+      <div class="col">
+        <label>Registration ID</label>
+        <div style="display:flex;gap:8px">
+          <input id="regId" readonly>
+          <button type="button" class="btn ghost" id="regen">Regenerate</button>
+        </div>
+        <div class="small">Auto created (prefix by organisation)</div>
+      </div>
+      <div class="col"><label>Full name *</label><input id="fullName" required></div>
+      <div class="col"><label>Email *</label><input id="email" type="email" required></div>
+    </div>
+
+    <div class="row">
+      <div class="col"><label>Contact number *</label><input id="mobile" pattern="[0-9]{10}" required></div>
+      <div class="col"><label>Alternate number</label><input id="altMobile"></div>
+      <div class="col"><label>State *</label><input id="state" required></div>
+    </div>
+
+    <div class="row">
+      <div class="col"><label>City *</label><input id="city" required></div>
+      <div class="col"><label>Pincode *</label><input id="pincode" pattern="[0-9]{6}" required></div>
+      <div class="col"><label>Service area — City</label><input id="serviceCity"></div>
+    </div>
+
+    <div class="row">
+      <div class="col"><label>Service area — Zip</label><input id="serviceZip"></div>
+      <div class="col"><label>Aadhaar *</label><input id="aadhaar" pattern="[0-9]{12}" required></div>
+      <div class="col"><label>PAN *</label><input id="pan" pattern="[A-Z]{5}[0-9]{4}[A-Z]" required></div>
+    </div>
+
+    <!-- NEW Sub Category Row -->
+    <div class="row">
+      <div class="col">
+        <label>Sub Category *</label>
+        <select id="subCategory" class="gold-input-select" required>
+          <option value="">Select Sub Category</option>
+          <option value="subcat1">Sub Category 1</option>
+          <option value="subcat2">Sub Category 2</option>
+          <option value="subcat3">Sub Category 3</option>
+          <!-- Add more options as needed -->
+        </select>
+      </div>
+    </div>
+    <!-- END NEW Sub Category Row -->
+
+    <div style="margin-top:12px;display:flex;justify-content:space-between">
+      <div><button type="button" class="btn ghost" id="backToSelect" onclick="showScreen('selectOrg')">Back</button></div>
+      <div><button type="button" class="btn" id="toBank">Continue to Bank →</button></div>
+    </div>
+  </form>
+</div>
